@@ -1,5 +1,5 @@
 "use client";
-import { db } from "@/firebase/firebase";
+import { db, storage } from "@/firebase/firebase";
 import {
   addDoc,
   collection,
@@ -9,6 +9,7 @@ import {
   onSnapshot,
   updateDoc,
 } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 
@@ -17,20 +18,39 @@ function AddProductModal({ show, setShow, handleShow }) {
     name: "NA",
     price: 1,
     description: "NA",
-    imageUrl: "NA",
+    imageUrl: "",
   });
   const [error, setError] = useState(null);
+  const [handleImage, setHandleImage] = useState(null);
+
+  console.log(handleImage?.name);
+
+  /**
+   * Uploads a file to the storage and updates the item data with the image URL.
+   */
+  const uploadFile = async (e) => {
+    const file = handleImage;
+    if (file) {
+      const storageRef = ref(storage, `images/${file.name}`);
+      const uploadTask = await uploadBytes(storageRef, file);
+      if (uploadTask) {
+        const downloadURL = await getDownloadURL(uploadTask.ref);
+        setItemData({ ...itemData, imageUrl: downloadURL });
+      }
+    }
+  };
 
   const addCoffee = async () => {
-    if (
-      !itemData.name ||
-      !itemData.price ||
-      !itemData.description ||
-      !itemData.imageUrl
-    ) {
+    if (!itemData.name || !itemData.price || !itemData.description) {
       setError("All fields must have a value.");
       return;
     }
+
+    if (handleImage) {
+      uploadFile();
+    }
+
+    if (!itemData.imageUrl) return;
 
     const collectionRef = collection(db, "perfume");
     // Get all documents in the collection
@@ -66,7 +86,13 @@ function AddProductModal({ show, setShow, handleShow }) {
       <Modal.Header closeButton>
         <Modal.Title>
           <h3>Add Product</h3>
-          {!!error && <p style={{fontSize : 15 , color : 'red' , fontWeight : 400 , margin : 0}}>{error}</p>}
+          {!!error && (
+            <p
+              style={{ fontSize: 15, color: "red", fontWeight: 400, margin: 0 }}
+            >
+              {error}
+            </p>
+          )}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -81,10 +107,11 @@ function AddProductModal({ show, setShow, handleShow }) {
 
           <input
             required
-            type="text"
+            type="file"
             name="imageUrl"
-            placeholder="Image Url"
-            onChange={handleInputChange}
+            placeholder="Image File"
+            accept="image/*"
+            onChange={(e) => setHandleImage(e.target.files[0])}
           />
 
           <input

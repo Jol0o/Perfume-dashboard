@@ -67,6 +67,8 @@ function Product() {
     setAlert(!alert);
   };
 
+  console.log(coffee?.imageUrl);
+
   return (
     <div className="product-container">
       {alert && (
