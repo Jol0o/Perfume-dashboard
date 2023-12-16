@@ -17,8 +17,11 @@ function AddProductModal({ show, setShow, handleShow }) {
   const [itemData, setItemData] = useState({
     name: "NA",
     price: 1,
+    amount: 1,
+    oilbaseAmount: 1,
     description: "NA",
     imageUrl: "",
+    genderType: "N/A",
   });
   const [error, setError] = useState(null);
   const [handleImage, setHandleImage] = useState(null);
@@ -41,7 +44,14 @@ function AddProductModal({ show, setShow, handleShow }) {
   };
 
   const addCoffee = async () => {
-    if (!itemData.name || !itemData.price || !itemData.description) {
+    if (
+      !itemData.name ||
+      !itemData.price ||
+      !itemData.description ||
+      !itemData.amount ||
+      !itemData.oilbaseAmount ||
+      !itemData.genderType
+    ) {
       setError("All fields must have a value.");
       return;
     }
@@ -63,11 +73,13 @@ function AddProductModal({ show, setShow, handleShow }) {
 
     // If a duplicate document does not exist, add a new document
     if (!duplicateDoc) {
+      itemData.genderType = itemData.genderType.toLowerCase();
       const docRef = await addDoc(collectionRef, itemData);
 
       await updateDoc(doc(db, "perfume", docRef.id), {
         id: docRef.id, // Add the ID to the document
       });
+
       setError(null);
     } else {
       setError("A document with the same name already exists.");
@@ -124,8 +136,24 @@ function AddProductModal({ show, setShow, handleShow }) {
           <input
             required
             type="number"
-            name="rating"
-            placeholder="Item Rating"
+            name="amount"
+            placeholder="Item Amount"
+            onChange={handleInputChange}
+          />
+
+          <input
+            required
+            type="number"
+            name="oilbaseAmount"
+            placeholder="Item Oil Base Amount"
+            onChange={handleInputChange}
+          />
+
+          <input
+            required
+            type="text"
+            name="genderType"
+            placeholder="Gender Type (Men/Women)"
             onChange={handleInputChange}
           />
 
