@@ -13,6 +13,7 @@ import React, { useState, useEffect } from "react";
 function EditProduct({ id }) {
   const [product, setProduct] = useState(null);
   const router = useRouter();
+  const [handleImage, setHandleImage] = useState(null);
 
   const getProductById = async () => {
     const productDocRefCoffees = doc(collection(db, "coffees"), id);
@@ -28,6 +29,20 @@ function EditProduct({ id }) {
     } else {
       console.log("No such document!");
     }
+  };
+
+  const uploadFile = async () => {
+    const file = handleImage;
+    if (file) {
+      const storageRef = ref(storage, `images/${file.name}`);
+      const uploadTask = await uploadBytes(storageRef, file);
+      if (uploadTask) {
+        const downloadURL = await getDownloadURL(uploadTask.ref);
+        setItemData({ ...itemData, imageUrl: downloadURL });
+        return downloadURL;
+      }
+    }
+    return null;
   };
 
   useEffect(() => {
@@ -46,10 +61,15 @@ function EditProduct({ id }) {
     if (
       !itemData.name ||
       !itemData.price ||
-      !itemData.description ||
-      !itemData.imageUrl
+      !itemData.description
     ) {
       return;
+    }
+
+    if (handleImage) {
+      const imageUrl = await uploadFile();
+      if (!imageUrl) return;
+      setItemData({ ...itemData, imageUrl });
     }
 
     e.preventDefault();
@@ -83,11 +103,12 @@ function EditProduct({ id }) {
         />
 
         <input
-          type="text"
+          required
+          type="file"
           name="imageUrl"
-          placeholder="Image Url"
-          onChange={handleInputChange}
-          value={itemData.imageUrl}
+          placeholder="Image File"
+          accept="image/*"
+          onChange={(e) => setHandleImage(e.target.files[0])}
         />
 
         <input

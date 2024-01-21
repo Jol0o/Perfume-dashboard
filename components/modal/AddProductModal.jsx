@@ -26,12 +26,12 @@ function AddProductModal({ show, setShow, handleShow }) {
   const [error, setError] = useState(null);
   const [handleImage, setHandleImage] = useState(null);
 
-  console.log(handleImage?.name);
+  console.log(itemData);
 
   /**
    * Uploads a file to the storage and updates the item data with the image URL.
    */
-  const uploadFile = async (e) => {
+  const uploadFile = async () => {
     const file = handleImage;
     if (file) {
       const storageRef = ref(storage, `images/${file.name}`);
@@ -39,8 +39,10 @@ function AddProductModal({ show, setShow, handleShow }) {
       if (uploadTask) {
         const downloadURL = await getDownloadURL(uploadTask.ref);
         setItemData({ ...itemData, imageUrl: downloadURL });
+        return downloadURL;
       }
     }
+    return null;
   };
 
   const addCoffee = async () => {
@@ -57,7 +59,9 @@ function AddProductModal({ show, setShow, handleShow }) {
     }
 
     if (handleImage) {
-      uploadFile();
+      const imageUrl = await uploadFile();
+      if (!imageUrl) return;
+      setItemData({ ...itemData, imageUrl });
     }
 
     if (!itemData.imageUrl) return;
@@ -79,9 +83,11 @@ function AddProductModal({ show, setShow, handleShow }) {
       await updateDoc(doc(db, "perfume", docRef.id), {
         id: docRef.id, // Add the ID to the document
       });
-
+      setItemData(null);
+      setShow(false);
       setError(null);
     } else {
+      setShow(false);
       setError("A document with the same name already exists.");
     }
   };

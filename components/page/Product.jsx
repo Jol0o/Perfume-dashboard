@@ -67,10 +67,8 @@ function Product() {
     setAlert(!alert);
   };
 
-  console.log(coffee?.imageUrl);
-
   return (
-    <div className="product-container">
+    <div className="product-container ">
       {alert && (
         <Alert onClose={() => setShow(false)} variant="primary" dismissible>
           Delete Item Successfully
@@ -91,7 +89,7 @@ function Product() {
               <th>Description</th>
               <th>Image</th>
               <th>Price</th>
-              <th>Rating</th>
+              <th>Amount</th>
               <th>Delete</th>
               <th>Edit</th>
             </tr>
@@ -112,7 +110,7 @@ function Product() {
                   ></img>
                 </td>
                 <td>{item.price}</td>
-                <td>{item.rating}</td>
+                <td>{item.oilbaseAmount}</td>
                 <td>
                   <BsTrash onClick={() => delData(item.id)} />
                 </td>

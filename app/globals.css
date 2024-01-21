@@ -191,7 +191,20 @@ a {
   display: block;
 }
 
-.product-container table {
+.container-dashboard {
+  width : 100%
+}
+.product-container,
+.user-container {
+  width: 100%;
+  min-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.product-container table,
+.user-container table {
   width: 100%;
 }
 
@@ -280,7 +293,6 @@ a {
   border-radius: 50%;
 }
 
-
 @media (max-width: 767px) {
   .sidebar-container {
     width: 70px;
@@ -299,11 +311,8 @@ a {
   }
 
   .sidebar-container .sidebar-btns .sidebar-header {
-    
     justify-content: center;
-
   }
-  
 }
 
 @media (max-width: 800px) {

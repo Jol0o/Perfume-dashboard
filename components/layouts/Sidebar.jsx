@@ -11,7 +11,7 @@ import Image from "next/image";
 function Sidebar() {
   const logout = async () => {
     try {
-      const result = await signOut(auth);
+      await signOut(auth);
     } catch (err) {
       console.log(err);
     }
@@ -45,7 +45,7 @@ function Sidebar() {
 
         <Link href="/">
           <Button variant="secondary">
-            <h1>Users</h1> <AiOutlineUser />
+            <h1>User Cart</h1> <AiOutlineUser />
           </Button>
         </Link>
         <Link href="/product">
